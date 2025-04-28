@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>School Shootings Visualization</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
@@ -10,6 +11,16 @@
       padding: 0;
     }
   
+    /* Styling for the page header */
+    header {
+      background-color: #333;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 36px;
+      font-weight: bold;
+    }
+
     /* Styling for the dataset description */
     #dataset-description {
       background-color: #f4f4f9; /* Light gray background */
@@ -26,6 +37,16 @@
       color: #333;  /* Dark gray text */
       max-width: 800px;
       margin: 0 auto;  /* Center the text */
+    }
+
+    #dataset-description a {
+      color: #1a73e8; /* Nice blue link */
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    #dataset-description a:hover {
+      text-decoration: underline;
     }
   
     /* Container grid for positioning elements */
@@ -73,9 +94,18 @@
   </style>
 </head>
 <body>
+  <header>School Shootings in the U.S. (1990 - Present)</header>
+
   <div id="dataset-description">
-    <p id="text">This dataset contains information on incidents of school shootings across various locations. The data includes details about the type of shooting, such as whether the incident was a suicide or involved other factors. Each entry in the dataset represents an individual shooting incident, with associated metadata like the location, date, and number of casualties.</p>
+    <p id="text">
+      This dataset contains information on incidents of school shootings across various locations.
+      The data includes details about the type of shooting, such as whether the incident was a suicide or involved other factors.
+      Each entry represents an individual incident, with associated metadata like location, date, and number of casualties.
+      <br><br>
+      <a href="https://www.kaggle.com/datasets/ecodan/school-shootings-us-1990present" target="_blank">View the Dataset on Kaggle</a>
+    </p>
   </div>
+
   <div class="container">
     <div id="canvas" class="canvas-box">
       <!-- Your textual data here -->
@@ -84,6 +114,7 @@
     <div id="canvas3" class="canvas-box">
       <!-- Your textual data here -->
     </div>  
+
     <div id="canvas4" class="canvas-box"></div>
   </div>
 
