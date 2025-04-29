@@ -10,8 +10,7 @@
       margin: 0;
       padding: 0;
     }
-  
-    /* Styling for the page header */
+
     header {
       background-color: #333;
       color: white;
@@ -21,26 +20,25 @@
       font-weight: bold;
     }
 
-    /* Styling for the dataset description */
     #dataset-description {
-      background-color: #f4f4f9; /* Light gray background */
+      background-color: #f4f4f9;
       padding: 40px;
-      margin-bottom: 20px; /* Space below the description */
-      border-bottom: 3px solid #ddd; /* Subtle bottom border */
+      margin-bottom: 20px;
+      border-bottom: 3px solid #ddd;
       text-align: center;
-      font-size: 30px;  /* Increase font size to 30px */
+      font-size: 30px;
     }
 
     #dataset-description p {
-      font-size: 30px;  /* Adjusted font size */
-      line-height: 1.6;  /* Increase line height for readability */
-      color: #333;  /* Dark gray text */
+      font-size: 30px;
+      line-height: 1.6;
+      color: #333;
       max-width: 800px;
-      margin: 0 auto;  /* Center the text */
+      margin: 0 auto;
     }
 
     #dataset-description a {
-      color: #1a73e8; /* Nice blue link */
+      color: #1a73e8;
       text-decoration: none;
       font-weight: bold;
     }
@@ -48,31 +46,29 @@
     #dataset-description a:hover {
       text-decoration: underline;
     }
-  
-    /* Container grid for positioning elements */
+
     .container {
-      display: grid;
-      grid-template-columns: 1fr 1fr; /* Two equal columns */
-      grid-template-rows: auto 1fr;   /* First row is for title, second row for content */
-      gap: 20px; /* Adds space between grid items */
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
       padding: 20px;
     }
-  
-    /* Styling for the map div */
-    #map {
-      border: 1px solid #ccc;
-      padding: 10px;
-      position: relative;
-      height: 600px;  /* Ensure the map has a height */
-    }
-  
+
+    .canvas-box {
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 30px;  /* Add space between charts */
+  height: auto;         /* Let content define height */
+  min-height: 400px;    /* Optional: Prevent too-short boxes */
+}
+
+
     .bubble {
       fill-opacity: 0.6;
       stroke: black;
       stroke-width: 1px;
     }
-  
-    /* Tooltip styling */
+
     .tooltip {
       position: absolute;
       text-align: center;
@@ -84,7 +80,7 @@
       pointer-events: none;
       display: none;
     }
-  
+
     .title {
       font-size: 24px;
       font-weight: bold;
@@ -107,14 +103,8 @@
   </div>
 
   <div class="container">
-    <div id="canvas" class="canvas-box">
-      <!-- Your textual data here -->
-    </div>
-
-    <div id="canvas3" class="canvas-box">
-      <!-- Your textual data here -->
-    </div>  
-
+    <div id="canvas" class="canvas-box"></div>
+    <div id="canvas3" class="canvas-box"></div>
     <div id="canvas4" class="canvas-box"></div>
   </div>
 
