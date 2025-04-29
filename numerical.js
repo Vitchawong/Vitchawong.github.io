@@ -1,108 +1,97 @@
-// Set dimensions for the SVG canvas and margins
-const margin3 = { top: 30, right: 20, bottom: 70, left: 80 };
-const width3 = 960 - margin3.left - margin3.right;
-const height3 = 1000 - margin3.top - margin3.bottom;
+const width3 = 800;
+const height3 = 800;
+const margin3 = 100;
+const radius = Math.min(width3, height3) / 2 - margin3;
 
-// Append SVG to the canvas
 const svg3 = d3.select("#canvas3").append("svg")
-  .attr("width", width3 + margin3.left + margin3.right)
-  .attr("height", height3 + margin3.top + margin3.bottom)
+  .attr("width", width3)
+  .attr("height", height3)
   .append("g")
-  .attr("transform", `translate(${margin3.left},${margin3.top})`);
+  .attr("transform", `translate(${width3 / 2}, ${height3 / 2})`);
 
-// Initialize tooltip for mouseover interaction
+// Tooltip
 const tooltip3 = d3.select("body").append("div")
   .attr("class", "tooltip")
   .style("position", "absolute")
   .style("text-align", "center")
   .style("padding", "10px")
-  .style("font-size", "26px")
+  .style("font-size", "20px")
   .style("background", "rgba(0, 0, 0, 0.7)")
   .style("color", "white")
   .style("border-radius", "5px")
   .style("pointer-events", "none")
-  .style("display", "none");  // Initially hidden
+  .style("display", "none");
 
-// Load the data
 d3.csv("school-shootings.csv").then(function(data3) {
-
-  // Aggregate shooters by gender (assuming 'gender_shooter1' and 'gender_shooter2' columns exist)
-  const groupedData3 = d3.group(data3, d => {
+  // Aggregate gender data
+  const groupedData = d3.group(data3, d => {
     const rawGender = d.gender_shooter1 || d.gender_shooter2 || "Unknown";
     const gender = rawGender.toLowerCase();
-  
     if (gender === "m") return "Male";
     if (gender === "f") return "Female";
     return "Unknown";
   });
-  
-  const aggregatedData3 = Array.from(groupedData3, ([gender, incidents]) => ({
+
+  const aggregatedData = Array.from(groupedData, ([gender, incidents]) => ({
     shooter_gender: gender,
-    totalIncidents: incidents.length  // Count number of incidents for each shooter gender
+    totalIncidents: incidents.length
   }));
 
-  // Create scales for x and y axes
-  const x3 = d3.scaleBand()
-    .domain(aggregatedData3.map(d => d.shooter_gender))
-    .range([0, width3])
-    .padding(0.1);  // Space between bars
+  // Pie generator
+  const pie = d3.pie()
+    .value(d => d.totalIncidents)
+    .sort(null);
 
-  const y3 = d3.scaleLinear()
-    .domain([0, d3.max(aggregatedData3, d => d.totalIncidents)])
-    .nice()  // Make the axis values more readable
-    .range([height3, 0]);
+  const data_ready = pie(aggregatedData);
 
-// Add x-axis
-svg3.append("g")
-  .attr("transform", `translate(0, ${height3})`)
-  .call(d3.axisBottom(x3))
-  .selectAll("text")
-  .style("font-size", "20px");
+  // Arc generator
+  const arc = d3.arc()
+    .innerRadius(radius * 0.5) // Donut hole
+    .outerRadius(radius * 0.9);
 
-// Add y-axis
-svg3.append("g")
-  .call(d3.axisLeft(y3))
-  .selectAll("text")
-  .style("font-size", "20px");
+  // Color scale
+  const color = d3.scaleOrdinal()
+    .domain(aggregatedData.map(d => d.shooter_gender))
+    .range(d3.schemeSet2);
 
-
-  // Create bars based on aggregated data
-  svg3.selectAll(".bar3")
-    .data(aggregatedData3)
-    .enter().append("rect")
-    .attr("class", "bar3")
-    .attr("x", d => x3(d.shooter_gender))
-    .attr("y", d => y3(d.totalIncidents))
-    .attr("width", x3.bandwidth())
-    .attr("height", d => height3 - y3(d.totalIncidents))
-    .style("fill", "steelblue")
-    .style("cursor", "pointer")
+  // Draw slices
+  svg3.selectAll("path")
+    .data(data_ready)
+    .enter()
+    .append("path")
+    .attr("d", arc)
+    .attr("fill", d => color(d.data.shooter_gender))
+    .attr("stroke", "white")
+    .style("stroke-width", "2px")
     .on("mouseover", function(event, d) {
       tooltip3.style("display", "block")
-        .html(`Shooter Gender: ${d.shooter_gender}<br>Total Incidents: ${d.totalIncidents}`)
-        .style("left", (event.pageX + 5) + "px")
+        .html(`Shooter Gender: ${d.data.shooter_gender}<br>Total Incidents: ${d.data.totalIncidents}`)
+        .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 28) + "px");
     })
-    .on("mouseout", function() {
-      tooltip3.style("display", "none");
-    });
-  
-  // Add X-axis label
-  svg3.append("text")
-    .attr("transform", `translate(${width3 / 2}, ${height3 + margin3.bottom - 10})`)
-    .style("text-anchor", "middle")
-    .style("font-size", "30px")
-    .text("Shooter Gender");
+    .on("mouseout", () => tooltip3.style("display", "none"));
 
-  // Add Y-axis label
-  svg3.append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", -margin3.left + 25)
-    .attr("x", -height3 / 2)
-    .style("text-anchor", "middle")
-    .style("font-size", "30px")
-    .text("Total Incidents");
+  // Add labels inside arcs
+  const labelArc = d3.arc()
+    .innerRadius(radius * 0.6)
+    .outerRadius(radius * 0.6);
 
+  svg3.selectAll("text")
+    .data(data_ready)
+    .enter()
+    .append("text")
+    .text(d => d.data.shooter_gender)
+    .attr("transform", d => `translate(${labelArc.centroid(d)})`)
+    .style("text-anchor", "middle")
+    .style("font-size", "20px");
+
+  // Title
+  svg3.append("text")
+    .attr("x", 0)
+    .attr("y", -height3 / 2 + 40)
+    .attr("text-anchor", "middle")
+    .style("font-size", "30px")
+    .text("Shooter Gender Distribution");
 }).catch(function(error3) {
   console.error('Error loading the dataset:', error3);
 });
